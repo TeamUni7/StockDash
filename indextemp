@@ -63,26 +63,69 @@
          stroke: #ffff00;
          stroke-width: 3px;
         }
+        .margin1{
+           border-right: 3px darkgrey dotted;
+           border-bottom: 2px darkgrey dotted;
+        }
+        .margin2{
+           border-bottom: 2px darkgrey dotted;
+        }
     </style>
 </head>
 <body class="bg-dark text-light">
         <div class="container-fluid">
               <div class="row">
-                   <div class="col-lg-5 historical"></div>
-                    <div class="col-lg-7">
-                         <button class="btn btn-primary btn2" style="font-size: large">Live Stock Values</button>
+                   <div class="col-lg-5 historical margin2">
+                        <div style="color:rgba(243,156,28,0.8); font-size: 60px;text-align: right">Historic Data Values</div>
+                        <div class="HistoricalGraph"></div>
+                   </div>
+                  <div class="col-lg-3 GraphOperations margin1">
+
+
+                  </div>
+                  <div class="col-lg-2 PredictStock margin1">
+                       <div style="color:rgba(243,156,28,0.8); font-size: 60px">Predict Stock Values</div>
+                        <div style="font-size: x-large">
+                            <form id="myForm" name="myForm" style="font-size: x-large">
+                            <div class="form-group">
+                                <label for="date">Date:</label>
+                                <input type="date" id="date">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="font-size:large">Predict NIFTY Value</button>
+                            </form>
+                               <p class="result"  style="color: lightgrey;font-size: 35px;font-family:'Arial Rounded MT Bold'"></p>
+                        </div>
+                  </div>
+                    <div class="col-lg-2 LiveStock margin1">
+                        <div style="color:rgba(243,156,28,0.8); font-size: 60px">Live Stock Values</div>
+                        <br>
+                        <br>
+                        <div class="Sensex">
+                           <div style="color: #99ff33;font-size: 45px">Sensex Live</div>
+                           <div class="SensexLive" style="color: lightgrey;font-size: 35px"></div>
+                       </div>
+                        <br>
+                        <br>
+                        <div class="Nifty">
+                           <div style="color: white;font-size: 45px">Nifty Live</div>
+                           <div class="NiftyLive" style="color: lightgrey;font-size: 35px"></div>
+                       </div>
+                        <br>
+                        <br>
+                        <div class="Gold">
+                           <div style="color: lightblue;font-size: 45px">Gold Live</div>
+                           <div class="GoldLive" style="color: lightgrey;font-size: 35px"></div>
+                       </div>
+                        <br>
+                        <br>
+                        <div class="Nasdaq">
+                           <div style="color: yellow;font-size: 45px">Nasdaq Live</div>
+                           <div class="NasdaqLive" style="color: lightgrey;font-size: 35px;"></div>
+                       </div>
                       <p class="result1"></p>
                     </div>
              </div>
-              <div class="row">
-                  <form id="myForm" name="myForm" style="font-size: large">
-                        <div class="form-group">
-                            <label for="date">Date:</label>
-                            <input type="date" id="date">
-                        <button type="submit" class="btn btn-primary" style="font-size:large">Predict NIFTY Value</button>
-                        </form>
-                  <p class="result"></p>
-              </div>
+
         </div>
 </body>
 </html>
@@ -358,7 +401,7 @@
     function graph()
     {
 
-                 $('.historical').html('');
+                 $('.HistoricalGraph').html('');
                  console.log('Lets Preint It');
 
                     console.log(DateArray);
@@ -462,6 +505,7 @@
                              .innerTickSize(-width)
                              .outerTickSize(0)
                              .tickPadding(12);
+
               svg.append("g")
                         .call(xAxis)
                         .attr("class", "axis")
@@ -563,15 +607,20 @@
          });
      }
     //----------------------------------------------Live Srapping for current values of stocks------------------------------------------------------------------------------------//
-    $('.btn2').click(function (e) {
+   setInterval(function () {
         console.log('clicked');
         scrap();
         setTimeout(function () {
             var date_now=new Date;
             console.log(date_now);
-            $('p.result1').html("Sensex Live:"+SENSEX_LIVE+"<br>"+'Gold Live:'+GOLD_LIVE+'<br>'+'Nasdaq Live:'+NASDAQ_LIVE+'<br>'+'Nifty Live:'+NIFTY_LIVE);
-        },15000);
-    });     
+{#            $('p.result1').html("Sensex Live:"+SENSEX_LIVE+"<br>"+'Gold Live:'+GOLD_LIVE+'<br>'+'Nasdaq Live:'+NASDAQ_LIVE+'<br>'+'Nifty Live:'+NIFTY_LIVE);#}
+            $('.SensexLive').html(SENSEX_LIVE);
+            $('.NiftyLive').html(NIFTY_LIVE);
+            $('.GoldLive').html(GOLD_LIVE);
+            $('.NasdaqLive').html(NASDAQ_LIVE);
+            },15000);
+        console.log('Scrapping Done');
+    },30000);
 
     //---------------------------------------------Building graph using current data set everytime the page is refreshed---------------------------------------------------------//
     $(document).ready(function () {
