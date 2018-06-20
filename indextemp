@@ -77,11 +77,27 @@
               <div class="row">
                    <div class="col-lg-5 historical margin2">
                         <div style="color:rgba(243,156,28,0.8); font-size: 60px;text-align: right">Historic Data Values</div>
-                        <div class="HistoricalGraph"></div>
+                        <div id="HistoricalGraph"></div>
                    </div>
                   <div class="col-lg-3 GraphOperations margin1">
+                        <div  style="color:rgba(243,156,28,0.8); font-size: 60px;text-align: right">Data For Date
+                            <form id="myForm2" name="myForm2" style="font-size: x-large">
+                                <div class="form-group">
+                                    <label for="date">From Date:</label>
+                                    <input type="date" id="date1">
+                                    <br>
+                                    <label for="date">To Date:</label>
+                                    <input type="date" id="date2">
+                                </div>
+                                <button type="submit" class="btn btn-success" style="font-size:x-large">Show</button>
+                            </form>
 
-
+                        </div>
+                      <div>
+                          <form id="myForm3" name="myForm3" style="font-size: x-large">
+                                <button type="submit" class="btn btn-success" style="font-size:xx-large">Reset</button>
+                            </form>
+                      </div>
                   </div>
                   <div class="col-lg-2 PredictStock margin1">
                        <div style="color:rgba(243,156,28,0.8); font-size: 60px">Predict Stock Values</div>
@@ -91,7 +107,7 @@
                                 <label for="date">Date:</label>
                                 <input type="date" id="date">
                             </div>
-                            <button type="submit" class="btn btn-primary" style="font-size:large">Predict NIFTY Value</button>
+                            <button type="submit" class="btn btn-primary" style="font-size:x-large">Predict NIFTY Value</button>
                             </form>
                                <p class="result"  style="color: lightgrey;font-size: 35px;font-family:'Arial Rounded MT Bold'"></p>
                         </div>
@@ -147,6 +163,7 @@
       var formatDate2 = d3.time.format("%c");
       var date_to_find="";
       var arr=[];
+      var graph_arr=[];
       var DateArray=[];//date values
       var SensexArray=[];//sensex values
       var GoldArray=[];//sensex values
@@ -401,7 +418,7 @@
     function graph()
     {
 
-                 $('.HistoricalGraph').html('');
+                 document.getElementById('HistoricalGraph').innerHTML="";
                  console.log('Lets Preint It');
 
                     console.log(DateArray);
@@ -414,10 +431,7 @@
                 };
                 var height=750;
                 var width=1100;
-
-
-
-                var svg=d3.select('.historical')
+                var svg=d3.select('#HistoricalGraph')
                             .append('svg')
                             .attr({
                                 "height":height,
@@ -428,16 +442,16 @@
                 width = width - margin.left - margin.right;
                 //var parseDate = d3.time.format("%d-%b-%y").parse; // Converts string to date object.
                 var formatDate=d3.time.format("%dth %B %Y");
-                var no = arr.length;
+                var no = graph_arr.length;
 
                 var yscale=d3.scale.linear()
-                                .domain([0,d3.max(arr,function(d){
+                                .domain([0,d3.max(graph_arr,function(d){
                                 return d.sensex+3000;
                             })])
                                 .range([height,60]);
                 var xscale = d3.time.scale()
                                 .range([0, width])
-                                .domain(d3.extent(arr, function(d) {
+                                .domain(d3.extent(graph_arr, function(d) {
                                                 return d.date;
                                                 })); 
                 var lineSensex=d3.svg.line()
@@ -474,19 +488,19 @@
                         });
                 var SENSEX=svg.append('path')
                                      .attr("class", "line1")
-                                    .attr('d',lineSensex(arr))
+                                    .attr('d',lineSensex(graph_arr))
                                     .attr("transform", "translate("+(margin.left-8)+',0)');
                 var NIFTY=svg.append('path')
                                      .attr("class", "line2")
-                                    .attr('d',lineNifty(arr))
+                                    .attr('d',lineNifty(graph_arr))
                                     .attr("transform", "translate("+(margin.left-8)+',0)');
                 var GOLD=svg.append('path')
                                      .attr("class", "line3")
-                                    .attr('d',lineGold(arr))
+                                    .attr('d',lineGold(graph_arr))
                                     .attr("transform", "translate("+(margin.left-8)+',0)');
                 var NASDAQ=svg.append('path')
                                      .attr("class", "line4")
-                                    .attr('d',lineNasdaq(arr))
+                                    .attr('d',lineNasdaq(graph_arr))
                                     .attr("transform", "translate("+(margin.left-8)+',0)');
 
 
@@ -552,11 +566,44 @@
                                     'fill':"white"
                                     });
     }
+    //-----------------------------------------------Resetting Graph to Original--------------------------------------------------------------------------------//
+    $('#myForm3').submit(function (e) {
+       e.preventDefault();
+       graph_arr=arr;
+       graph();
+    });
+    //-----------------------------------------------Showing Data for a given date range-----------------------------------------------------------------------//
+    $('#myForm2').submit(function (e) {
+        var dateFrom;
+        var dateTo;
+       console.log('In date from');
+       e.preventDefault();
+       dateFrom=$('#date1').val();
+       dateTo=$('#date2').val();
+       document.getElementById('myForm2').reset();
+       dateFrom=parseDate1(dateFrom);
+       dateFrom=formatDate1(dateFrom);
+       dateTo=parseDate1(dateTo);
+       dateTo=formatDate1(dateTo);
+        dateFrom=days_in_between(dateFrom);
+        dateTo=days_in_between(dateTo);
+       var arr2=[];
+       console.log(dateFrom+'<---dateFrom');
+       console.log(dateTo+'<---dateto');
+       for(var i=0;i<N;i++)
+       {
+           var temp = days_in_between(arr[i].date);
+           if (temp >= dateFrom && temp <= dateTo)
+               arr2.push(arr[i]);
+       }
+       console.log(arr2);
+        graph_arr=arr2;
+        graph();
+    });
     //-----------------------------------------------Predicting future values for date enetred in the input field---------------------------------------------------------------//
     $('#myForm').submit(function (e) {
         console.log('Button clicked');
         e.preventDefault();
-
         var date=$('#date').val();
         date_new=date;
         document.getElementById('myForm').reset();
@@ -660,8 +707,11 @@
                     DateArray.push(days_in_between(arr[i].date));
                 }
                 for(var i = 0; i < N; i++) { // Converting string to Date object of each arr element.
-                         arr[i].date = parseDate(arr[i].date);
-                 }
+                    arr[i].date = parseDate(arr[i].date);
+                }
+                 graph_arr=arr;
+                //console.log('Graph Arr');
+                //console.log(graph_arr);
                 graph();
                 console.log(arr);
 
